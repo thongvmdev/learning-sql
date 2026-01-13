@@ -271,7 +271,7 @@ These cover **Node.js integration + web app building** using the MySQL database:
 - [x] Section 1 — Introduction & First 5 Minutes of SQL
 - [x] Section 2 — Getting Started & Installation
 - [x] Section 3 — Creating Databases & Tables
-- [ ] Section 4 — Inserting Data
+- [] Section 4 — Inserting Data
 - [ ] Section 5 — CRUD Basics
 - [ ] Section 6 — CRUD Challenges
 - [ ] Section 7 — String Functions
