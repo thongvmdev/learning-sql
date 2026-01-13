@@ -1,0 +1,32 @@
+# MySQL Environment Variables Configuration
+# Copy these to a .env file in the same directory as docker-compose.yml
+
+# =======================
+# REQUIRED CONFIGURATION
+# =======================
+
+# MySQL Root Password (required)
+# Strong password for the MySQL root user
+MYSQL_ROOT_PASSWORD=MySecureRootPass123!
+
+# =======================
+# OPTIONAL CONFIGURATION
+# =======================
+
+# Database name to create on startup
+# This database will be created automatically when the container starts
+MYSQL_DATABASE=learning_db
+
+# Application user credentials
+# A non-root user will be created with these credentials
+# This user will have full access to the MYSQL_DATABASE
+MYSQL_USER=dev_user
+MYSQL_PASSWORD=DevUserPass123!
+
+# =======================
+# SETUP INSTRUCTIONS
+# =======================
+# 1. Create a .env file: touch .env
+# 2. Copy the variables above to .env
+# 3. Update the passwords with secure values
+# 4. Run: docker compose up -d
