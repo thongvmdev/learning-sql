@@ -35,6 +35,20 @@ services:
       retries: 5
       start_period: 30s
 
+  chartdb:
+    image: ghcr.io/chartdb/chartdb:latest
+    container_name: chartdb
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    ports:
+      - "8080:80"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
 volumes:
   mysql_data:
     driver: local

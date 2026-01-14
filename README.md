@@ -1,6 +1,6 @@
-# MySQL Docker Setup
+# MySQL Docker Setup with ChartDB
 
-This directory contains a Docker Compose configuration for running MySQL server with all basic setup.
+This directory contains a Docker Compose configuration for running MySQL server with ChartDB - a powerful database visualization and design tool.
 
 ## Prerequisites
 
@@ -30,20 +30,39 @@ This directory contains a Docker Compose configuration for running MySQL server 
    docker compose logs -f mysql
    ```
 
+## Services
+
+### MySQL Database
+- MySQL 8.0 server with persistent storage
+- Exposed on port `3306`
+
+### ChartDB
+- Database visualization and design tool
+- AI-powered schema generation (requires OpenAI API key)
+- Web interface available at: http://localhost:8080
+- Exposed on port `8080`
+
 ## Configuration
 
 ### Environment Variables
 
 The following environment variables are configured in `.env`:
 
+**MySQL:**
 - `MYSQL_ROOT_PASSWORD`: Password for the root user (required)
 - `MYSQL_DATABASE`: Name of the database to create on startup
 - `MYSQL_USER`: Application user to create
 - `MYSQL_PASSWORD`: Password for the application user
 
+**ChartDB:**
+- `OPENAI_API_KEY`: Your OpenAI API key (optional, for AI features)
+  - Get your key from: https://platform.openai.com/api-keys
+  - ChartDB works without it, but AI features won't be available
+
 ### Ports
 
 - MySQL is exposed on port `3306` (host:container)
+- ChartDB is exposed on port `8080:80` (host:container)
 
 ### Volumes
 
@@ -193,6 +212,54 @@ docker compose up -d
 - Use strong passwords for production environments
 - Consider using Docker secrets for production deployments
 
+## Using ChartDB
+
+### Access the Interface
+
+Once the services are running, open your browser and navigate to:
+```
+http://localhost:8080
+```
+
+### Connect to Your MySQL Database
+
+In ChartDB, use the following connection details:
+
+```
+Host: mysql (or host.docker.internal on Mac/Windows)
+Port: 3306
+Database: learning_db
+Username: dev_user
+Password: DevUserPass123!
+```
+
+**Note**: If connecting from ChartDB to MySQL:
+- Use `mysql` as the hostname (Docker internal networking)
+- Both services are on the same Docker network
+
+### Features
+
+ChartDB provides:
+- **Visual Schema Designer**: Create and modify database schemas visually
+- **ER Diagrams**: Automatically generate entity-relationship diagrams
+- **AI-Powered**: Use AI to generate schemas from descriptions (requires OpenAI API key)
+- **Export Options**: Export schemas as SQL, images, or various formats
+- **Collaboration**: Share and collaborate on database designs
+
+### Using AI Features
+
+To enable AI-powered features:
+1. Get an OpenAI API key from https://platform.openai.com/api-keys
+2. Add it to your `.env` file:
+   ```
+   OPENAI_API_KEY=sk-your-api-key-here
+   ```
+3. Restart the services:
+   ```bash
+   docker compose down
+   docker compose up -d
+   ```
+
 ## Health Check
 
 The MySQL service includes a health check that:
@@ -211,3 +278,4 @@ docker compose ps
 - [MySQL Docker Hub Documentation](https://hub.docker.com/_/mysql)
 - [MySQL Documentation](https://dev.mysql.com/doc/)
 - [Docker Compose Documentation](https://docs.docker.com/compose/)
+- [ChartDB GitHub](https://github.com/chartdb/chartdb)

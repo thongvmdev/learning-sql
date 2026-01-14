@@ -24,9 +24,20 @@ MYSQL_USER=dev_user
 MYSQL_PASSWORD=DevUserPass123!
 
 # =======================
+# CHARTDB CONFIGURATION
+# =======================
+
+# OpenAI API Key for ChartDB AI features
+# Get your API key from: https://platform.openai.com/api-keys
+# Optional: ChartDB will work without it, but AI features won't be available
+OPENAI_API_KEY=your_openai_api_key_here
+
+# =======================
 # SETUP INSTRUCTIONS
 # =======================
 # 1. Create a .env file: touch .env
 # 2. Copy the variables above to .env
 # 3. Update the passwords with secure values
-# 4. Run: docker compose up -d
+# 4. Add your OpenAI API key (optional)
+# 5. Run: docker compose up -d
+# 6. Access ChartDB at: http://localhost:8080
