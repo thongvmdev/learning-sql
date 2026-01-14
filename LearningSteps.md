@@ -271,9 +271,9 @@ These cover **Node.js integration + web app building** using the MySQL database:
 - [x] Section 1 — Introduction & First 5 Minutes of SQL
 - [x] Section 2 — Getting Started & Installation
 - [x] Section 3 — Creating Databases & Tables
-- [] Section 4 — Inserting Data
-- [ ] Section 5 — CRUD Basics
-- [ ] Section 6 — CRUD Challenges
+- [x] Section 4 — Inserting Data
+- [x] Section 5 — CRUD Basics
+- [x] Section 6 — CRUD Challenges
 - [ ] Section 7 — String Functions
 - [ ] Section 8 — Refining Selections
 - [ ] Section 9 — Aggregate Functions
@@ -286,3 +286,4 @@ These cover **Node.js integration + web app building** using the MySQL database:
 - [ ] Section 16 — Window Functions
 - [ ] Section 17 — Instagram Database Clone
 - [ ] Section 18 — Working With Lots of Instagram Data
+- [ ] Important - Index
