@@ -274,7 +274,7 @@ These cover **Node.js integration + web app building** using the MySQL database:
 - [x] Section 4 — Inserting Data
 - [x] Section 5 — CRUD Basics
 - [x] Section 6 — CRUD Challenges
-- [ ] Section 7 — String Functions
+- [x] Section 7 — String Functions
 - [ ] Section 8 — Refining Selections
 - [ ] Section 9 — Aggregate Functions
 - [ ] Section 10 — Revisiting Data Types
