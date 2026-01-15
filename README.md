@@ -10,17 +10,20 @@ This directory contains a Docker Compose configuration for running MySQL server 
 ## Quick Start
 
 1. **Configure environment variables** (already done, but you can modify `.env` file):
+
    ```bash
    cp .env.example .env
    # Edit .env with your preferred values
    ```
 
 2. **Start MySQL server**:
+
    ```bash
    docker compose up -d
    ```
 
 3. **Check if MySQL is running**:
+
    ```bash
    docker compose ps
    ```
@@ -33,10 +36,12 @@ This directory contains a Docker Compose configuration for running MySQL server 
 ## Services
 
 ### MySQL Database
+
 - MySQL 8.0 server with persistent storage
 - Exposed on port `3306`
 
 ### ChartDB
+
 - Database visualization and design tool
 - AI-powered schema generation (requires OpenAI API key)
 - Web interface available at: http://localhost:8080
@@ -49,12 +54,14 @@ This directory contains a Docker Compose configuration for running MySQL server 
 The following environment variables are configured in `.env`:
 
 **MySQL:**
+
 - `MYSQL_ROOT_PASSWORD`: Password for the root user (required)
 - `MYSQL_DATABASE`: Name of the database to create on startup
 - `MYSQL_USER`: Application user to create
 - `MYSQL_PASSWORD`: Password for the application user
 
 **ChartDB:**
+
 - `OPENAI_API_KEY`: Your OpenAI API key (optional, for AI features)
   - Get your key from: https://platform.openai.com/api-keys
   - ChartDB works without it, but AI features won't be available
@@ -67,8 +74,8 @@ The following environment variables are configured in `.env`:
 ### Volumes
 
 - `mysql_data`: Persistent storage for MySQL data
-- `./mysql-config`: Optional directory for custom MySQL configuration files (*.cnf)
-- `./init-scripts`: Optional directory for initialization scripts (*.sql, *.sh)
+- `./mysql-config`: Optional directory for custom MySQL configuration files (\*.cnf)
+- `./init-scripts`: Optional directory for initialization scripts (_.sql, _.sh)
 
 ## Connecting to MySQL
 
@@ -96,6 +103,7 @@ Password: DevUserPass123!
 ```
 
 Connection string example:
+
 ```
 mysql://dev_user:DevUserPass123!@localhost:3306/learning_db
 ```
@@ -103,41 +111,49 @@ mysql://dev_user:DevUserPass123!@localhost:3306/learning_db
 ## Useful Commands
 
 ### Start services
+
 ```bash
 docker compose up -d
 ```
 
 ### Stop services
+
 ```bash
 docker compose down
 ```
 
 ### Stop and remove volumes (⚠️ deletes all data)
+
 ```bash
 docker compose down -v
 ```
 
 ### Execute MySQL commands
+
 ```bash
 docker compose exec mysql mysql -u root -p
 ```
 
 ### Create a database backup
+
 ```bash
 docker compose exec mysql mysqldump -u root -p"${MYSQL_ROOT_PASSWORD}" --all-databases > backup.sql
 ```
 
 ### Restore from backup
+
 ```bash
 docker compose exec -T mysql mysql -u root -p"${MYSQL_ROOT_PASSWORD}" < backup.sql
 ```
 
 ### Access MySQL container shell
+
 ```bash
 docker compose exec mysql bash
 ```
 
 ### View real-time logs
+
 ```bash
 docker compose logs -f mysql
 ```
@@ -153,6 +169,7 @@ mkdir -p mysql-config
 ```
 
 Example `./mysql-config/custom.cnf`:
+
 ```ini
 [mysqld]
 max_connections = 200
@@ -169,6 +186,7 @@ mkdir -p init-scripts
 ```
 
 Example `./init-scripts/01-init.sql`:
+
 ```sql
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -183,6 +201,7 @@ Scripts are executed in alphabetical order.
 ## Troubleshooting
 
 ### Container won't start
+
 ```bash
 # Check logs
 docker compose logs mysql
@@ -193,11 +212,13 @@ docker compose up -d
 ```
 
 ### Connection refused
+
 - Wait for MySQL to fully initialize (check with `docker compose logs -f mysql`)
 - Verify MySQL is running: `docker compose ps`
 - Check port 3306 is not already in use: `lsof -i :3306`
 
 ### Reset everything
+
 ```bash
 docker compose down -v
 docker volume rm sql_mysql_data
@@ -206,7 +227,8 @@ docker compose up -d
 
 ## Security Notes
 
-⚠️ **Important**: 
+⚠️ **Important**:
+
 - Never commit `.env` file with real passwords to version control
 - Change default passwords in production
 - Use strong passwords for production environments
@@ -217,6 +239,7 @@ docker compose up -d
 ### Access the Interface
 
 Once the services are running, open your browser and navigate to:
+
 ```
 http://localhost:8080
 ```
@@ -234,12 +257,14 @@ Password: DevUserPass123!
 ```
 
 **Note**: If connecting from ChartDB to MySQL:
+
 - Use `mysql` as the hostname (Docker internal networking)
 - Both services are on the same Docker network
 
 ### Features
 
 ChartDB provides:
+
 - **Visual Schema Designer**: Create and modify database schemas visually
 - **ER Diagrams**: Automatically generate entity-relationship diagrams
 - **AI-Powered**: Use AI to generate schemas from descriptions (requires OpenAI API key)
@@ -249,6 +274,7 @@ ChartDB provides:
 ### Using AI Features
 
 To enable AI-powered features:
+
 1. Get an OpenAI API key from https://platform.openai.com/api-keys
 2. Add it to your `.env` file:
    ```
@@ -263,12 +289,14 @@ To enable AI-powered features:
 ## Health Check
 
 The MySQL service includes a health check that:
+
 - Runs every 10 seconds
 - Times out after 5 seconds
 - Retries up to 5 times
 - Waits 30 seconds before starting checks
 
 Check health status:
+
 ```bash
 docker compose ps
 ```

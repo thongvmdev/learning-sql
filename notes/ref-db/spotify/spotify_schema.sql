@@ -1,14 +1,20 @@
 -- ============================================================================
 -- SPOTIFY-LIKE DATABASE SCHEMA
--- Database: MySQL
+-- Database: PostgreSQL
 -- ============================================================================
+
+-- ============================================================================
+-- EXTENSIONS
+-- ============================================================================
+-- Enable pg_trgm extension for fuzzy text search (trigram matching)
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
 -- ============================================================================
 -- TABLE: users
 -- Purpose: Stores user account information including authentication and profile data
 -- ============================================================================
 CREATE TABLE users (
-    id              BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id              BIGSERIAL PRIMARY KEY,
     email           VARCHAR(255) NOT NULL UNIQUE,
     username        VARCHAR(50) NOT NULL UNIQUE,
     password_hash   VARCHAR(255) NOT NULL,
@@ -18,8 +24,8 @@ CREATE TABLE users (
     date_of_birth   DATE,
     subscription_type VARCHAR(20) DEFAULT 'free',     -- 'free', 'premium', 'family', 'student'
     is_active       BOOLEAN DEFAULT TRUE,
-    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- ============================================================================
@@ -27,16 +33,16 @@ CREATE TABLE users (
 -- Purpose: Stores artist/band information including their profile and metadata
 -- ============================================================================
 CREATE TABLE artists (
-    id              BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id              BIGSERIAL PRIMARY KEY,
     name            VARCHAR(255) NOT NULL,
     bio             TEXT,
     avatar_url      VARCHAR(500),
     verified        BOOLEAN DEFAULT FALSE,
     monthly_listeners BIGINT DEFAULT 0,
     country         CHAR(2),                          -- Origin country
-    genres          JSON,                             -- JSON array of genre tags
-    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    genres          VARCHAR[],                        -- Array of genre tags
+    created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- ============================================================================
@@ -44,7 +50,7 @@ CREATE TABLE artists (
 -- Purpose: Stores album information, each album belongs to a primary artist
 -- ============================================================================
 CREATE TABLE albums (
-    id              BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id              BIGSERIAL PRIMARY KEY,
     artist_id       BIGINT NOT NULL,
     title           VARCHAR(255) NOT NULL,
     cover_url       VARCHAR(500),
@@ -54,8 +60,8 @@ CREATE TABLE albums (
     duration_ms     BIGINT DEFAULT 0,                 -- Total album duration in milliseconds
     label           VARCHAR(255),                     -- Record label
     copyright       VARCHAR(500),
-    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (artist_id) REFERENCES artists(id) ON DELETE CASCADE
 );
 
@@ -64,7 +70,7 @@ CREATE TABLE albums (
 -- Purpose: Stores individual track/song information
 -- ============================================================================
 CREATE TABLE tracks (
-    id              BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id              BIGSERIAL PRIMARY KEY,
     album_id        BIGINT NOT NULL,
     title           VARCHAR(255) NOT NULL,
     duration_ms     INT NOT NULL,                     -- Track duration in milliseconds
@@ -76,8 +82,8 @@ CREATE TABLE tracks (
     audio_url       VARCHAR(500),                     -- Full track audio URL
     popularity      INT DEFAULT 0 CHECK (popularity >= 0 AND popularity <= 100),
     play_count      BIGINT DEFAULT 0,
-    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (album_id) REFERENCES albums(id) ON DELETE CASCADE
 );
 
@@ -91,7 +97,7 @@ CREATE TABLE track_artists (
     artist_id       BIGINT NOT NULL,
     artist_role     VARCHAR(20) DEFAULT 'primary',    -- 'primary', 'featured', 'remixer'
     display_order   INT DEFAULT 0,                    -- Order in which artists are displayed
-    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (track_id, artist_id),
     FOREIGN KEY (track_id) REFERENCES tracks(id) ON DELETE CASCADE,
     FOREIGN KEY (artist_id) REFERENCES artists(id) ON DELETE CASCADE
@@ -102,7 +108,7 @@ CREATE TABLE track_artists (
 -- Purpose: Stores user-created playlists and system-generated playlists
 -- ============================================================================
 CREATE TABLE playlists (
-    id              BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id              BIGSERIAL PRIMARY KEY,
     user_id         BIGINT NOT NULL,
     name            VARCHAR(255) NOT NULL,
     description     TEXT,
@@ -112,8 +118,8 @@ CREATE TABLE playlists (
     total_tracks    INT DEFAULT 0,
     duration_ms     BIGINT DEFAULT 0,
     followers_count BIGINT DEFAULT 0,
-    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
@@ -123,13 +129,13 @@ CREATE TABLE playlists (
 --          Maintains track order within playlists
 -- ============================================================================
 CREATE TABLE playlist_tracks (
-    id              BIGINT AUTO_INCREMENT PRIMARY KEY,  -- Separate PK for easier reordering
+    id              BIGSERIAL PRIMARY KEY,            -- Separate PK for easier reordering
     playlist_id     BIGINT NOT NULL,
     track_id        BIGINT NOT NULL,
     added_by_user_id BIGINT,
     position        INT NOT NULL,                     -- Track position in playlist
-    added_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE KEY unique_playlist_track (playlist_id, track_id),  -- Prevent duplicate tracks in same playlist
+    added_at        TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (playlist_id, track_id),                   -- Prevent duplicate tracks in same playlist
     FOREIGN KEY (playlist_id) REFERENCES playlists(id) ON DELETE CASCADE,
     FOREIGN KEY (track_id) REFERENCES tracks(id) ON DELETE CASCADE,
     FOREIGN KEY (added_by_user_id) REFERENCES users(id) ON DELETE SET NULL
@@ -142,7 +148,7 @@ CREATE TABLE playlist_tracks (
 CREATE TABLE user_follows (
     user_id         BIGINT NOT NULL,
     artist_id       BIGINT NOT NULL,
-    followed_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    followed_at     TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     notifications_enabled BOOLEAN DEFAULT TRUE,       -- Notify on new releases
     PRIMARY KEY (user_id, artist_id),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -156,7 +162,7 @@ CREATE TABLE user_follows (
 CREATE TABLE user_follows_users (
     follower_id     BIGINT NOT NULL,
     following_id    BIGINT NOT NULL,
-    followed_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    followed_at     TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (follower_id, following_id),
     CHECK (follower_id != following_id),              -- Prevent self-following
     FOREIGN KEY (follower_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -168,10 +174,10 @@ CREATE TABLE user_follows_users (
 -- Purpose: Records every track play for analytics, recommendations, and "recently played"
 -- ============================================================================
 CREATE TABLE listening_history (
-    id              BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id              BIGSERIAL PRIMARY KEY,
     user_id         BIGINT NOT NULL,
     track_id        BIGINT NOT NULL,
-    played_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    played_at       TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     duration_played_ms INT,                           -- How much of the track was played
     context_type    VARCHAR(20),                      -- 'album', 'playlist', 'artist', 'search'
     context_id      BIGINT,                           -- ID of the context (album_id, playlist_id, etc.)
@@ -189,7 +195,7 @@ CREATE TABLE listening_history (
 CREATE TABLE saved_tracks (
     user_id         BIGINT NOT NULL,
     track_id        BIGINT NOT NULL,
-    saved_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    saved_at        TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (user_id, track_id),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (track_id) REFERENCES tracks(id) ON DELETE CASCADE
@@ -202,7 +208,7 @@ CREATE TABLE saved_tracks (
 CREATE TABLE saved_albums (
     user_id         BIGINT NOT NULL,
     album_id        BIGINT NOT NULL,
-    saved_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    saved_at        TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (user_id, album_id),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (album_id) REFERENCES albums(id) ON DELETE CASCADE
@@ -215,7 +221,7 @@ CREATE TABLE saved_albums (
 CREATE TABLE playlist_followers (
     user_id         BIGINT NOT NULL,
     playlist_id     BIGINT NOT NULL,
-    followed_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    followed_at     TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (user_id, playlist_id),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (playlist_id) REFERENCES playlists(id) ON DELETE CASCADE
@@ -243,13 +249,13 @@ CREATE INDEX idx_users_subscription_type ON users(subscription_type, is_active);
 -- -----------------------------------------------------------------------------
 -- For searching artists by name (case-insensitive search support)
 CREATE INDEX idx_artists_name ON artists(name);
-CREATE FULLTEXT INDEX idx_artists_name_fulltext ON artists(name);  -- Full-text search for MySQL
+CREATE INDEX idx_artists_name_trgm ON artists USING GIN (name gin_trgm_ops);  -- Fuzzy text search with pg_trgm
 
 -- For sorting by popularity
 CREATE INDEX idx_artists_monthly_listeners ON artists(monthly_listeners DESC);
 
--- For filtering by verification status (MySQL doesn't support WHERE clause in indexes)
-CREATE INDEX idx_artists_verified ON artists(verified);
+-- For filtering by verification status (partial index for verified artists only)
+CREATE INDEX idx_artists_verified ON artists(verified) WHERE verified = TRUE;
 
 -- -----------------------------------------------------------------------------
 -- Albums table indexes
@@ -280,7 +286,7 @@ CREATE INDEX idx_tracks_play_count ON tracks(play_count DESC);
 
 -- For searching tracks by title
 CREATE INDEX idx_tracks_title ON tracks(title);
-CREATE FULLTEXT INDEX idx_tracks_title_fulltext ON tracks(title);  -- Full-text search for MySQL
+CREATE INDEX idx_tracks_title_trgm ON tracks USING GIN (title gin_trgm_ops);  -- Fuzzy text search with pg_trgm
 
 -- Composite index for album track listing (ordered)
 CREATE INDEX idx_tracks_album_order ON tracks(album_id, disc_number, track_number);
@@ -300,8 +306,8 @@ CREATE INDEX idx_track_artists_display ON track_artists(track_id, display_order)
 -- For fetching all playlists by a user
 CREATE INDEX idx_playlists_user_id ON playlists(user_id);
 
--- For discovering public playlists (MySQL doesn't support WHERE clause in indexes)
-CREATE INDEX idx_playlists_public ON playlists(is_public, followers_count DESC);
+-- For discovering public playlists (partial index for public playlists only)
+CREATE INDEX idx_playlists_public ON playlists(followers_count DESC) WHERE is_public = TRUE;
 
 -- For searching playlists by name
 CREATE INDEX idx_playlists_name ON playlists(name);
@@ -377,14 +383,38 @@ CREATE INDEX idx_playlist_followers_user ON playlist_followers(user_id, followed
 -- TRIGGERS FOR AUTOMATIC UPDATES
 -- ============================================================================
 
--- Note: MySQL 8.0+ handles updated_at automatically with ON UPDATE CURRENT_TIMESTAMP
--- No additional triggers needed for tables with updated_at column
+-- Trigger function to automatically update updated_at timestamp
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+-- Apply the trigger to all tables with updated_at column
+CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_artists_updated_at BEFORE UPDATE ON artists
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_albums_updated_at BEFORE UPDATE ON albums
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_tracks_updated_at BEFORE UPDATE ON tracks
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_playlists_updated_at BEFORE UPDATE ON playlists
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 
 -- ============================================================================
--- NOTES FOR MYSQL
+-- NOTES FOR POSTGRESQL
 -- ============================================================================
--- 1. Full-text search is available via FULLTEXT indexes (already created above)
--- 2. JSON data type is used for arrays (e.g., genres in artists table)
--- 3. updated_at columns auto-update via ON UPDATE CURRENT_TIMESTAMP
--- 4. BIGINT AUTO_INCREMENT is used instead of BIGSERIAL
+-- 1. Full-text search is available via GIN indexes with pg_trgm extension
+-- 2. VARCHAR[] data type is used for arrays (e.g., genres in artists table)
+-- 3. updated_at columns auto-update via triggers (defined above)
+-- 4. BIGSERIAL is used for auto-incrementing primary keys
+-- 5. TIMESTAMP WITH TIME ZONE is used for all timestamp columns for global consistency
+-- 6. Partial indexes with WHERE clauses optimize queries for specific conditions
