@@ -276,11 +276,11 @@ These cover **Node.js integration + web app building** using the MySQL database:
 - [x] Section 6 — CRUD Challenges
 - [x] Section 7 — String Functions
 - [ ] Section 8 — Refining Selections
-- [ ] Section 9 — Aggregate Functions
+- [x] Section 9 — Aggregate Functions
 - [ ] Section 10 — Revisiting Data Types
 - [ ] Section 11 — Comparison & Logical Operators
 - [ ] Section 12 — Constraints & ALTER TABLE
-- [ ] Section 13 — One-to-Many Relationships & Joins
+- [x] Section 13 — One-to-Many Relationships & Joins
 - [ ] Section 14 — Many-to-Many Relationships
 - [ ] Section 15 — Views, Modes & More
 - [ ] Section 16 — Window Functions
