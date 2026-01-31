@@ -275,7 +275,7 @@ These cover **Node.js integration + web app building** using the MySQL database:
 - [x] Section 5 — CRUD Basics
 - [x] Section 6 — CRUD Challenges
 - [x] Section 7 — String Functions
-- [ ] Section 8 — Refining Selections
+- [x] Section 8 — Refining Selections
 - [x] Section 9 — Aggregate Functions
 - [ ] Section 10 — Revisiting Data Types
 - [ ] Section 11 — Comparison & Logical Operators
@@ -287,3 +287,5 @@ These cover **Node.js integration + web app building** using the MySQL database:
 - [ ] Section 17 — Instagram Database Clone
 - [ ] Section 18 — Working With Lots of Instagram Data
 - [ ] Important - Index
+
+### Time: about 2-3month (Target to finish > end of March)
