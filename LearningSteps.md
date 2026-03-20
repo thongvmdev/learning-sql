@@ -281,11 +281,10 @@ These cover **Node.js integration + web app building** using the MySQL database:
 - [ ] Section 11 — Comparison & Logical Operators
 - [ ] Section 12 — Constraints & ALTER TABLE
 - [x] Section 13 — One-to-Many Relationships & Joins
-- [x] Section 14 — Many-to-Many Relationships
+- [x] Section 14 — Many-to-Many Relationships > Revise 260212
 - [ ] Section 15 — Views, Modes & More
 - [ ] Section 16 — Window Functions
-- [ ] Section 17 — Instagram Database Clone
+- [ ] Section 17 — Instagram Database Clone && Index
 - [ ] Section 18 — Working With Lots of Instagram Data
-- [ ] Important - Index
 
 ### Time: about 2-3month (Target to finish > end of March)
