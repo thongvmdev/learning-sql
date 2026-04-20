@@ -284,7 +284,6 @@ These cover **Node.js integration + web app building** using the MySQL database:
 - [x] Section 14 — Many-to-Many Relationships > Revise 260212
 - [ ] Section 15 — Views, Modes & More
 - [ ] Section 16 — Window Functions
-- [ ] Section 17 — Instagram Database Clone && Index
-- [ ] Section 18 — Working With Lots of Instagram Data
+- [x] Section 17 — Instagram Database Clone && Index
 
 ### Time: about 2-3month (Target to finish > end of March)
